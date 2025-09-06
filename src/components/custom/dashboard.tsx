@@ -48,12 +48,11 @@ const Dashboard = () => {
 
   for (let index = 0; index < transaction.length; index++) {
     totalExpensesAmount +=
-      transaction[index].category == "Expenses" ? transaction[index].amount : 0;
+      transaction[index].category !== "Income" ? transaction[index].amount : 0;
     totalIncomeAmount +=
       transaction[index].category == "Income" ? transaction[index].amount : 0;
   }
-  console.log("totalIncomeAmount: ", totalIncomeAmount);
-  console.log("totalExpensesAmount: ", totalExpensesAmount);
+
   let totalBalanceAmount = totalIncomeAmount - totalExpensesAmount;
 
   return (

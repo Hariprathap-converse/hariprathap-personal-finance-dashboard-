@@ -2,6 +2,7 @@
 import { categoriesList, MockData, transcation } from "@/mockdata/layout";
 import { LucideProps } from "lucide-react";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { json } from "stream/consumers";
 
 interface MockData {
   sidebar: {
@@ -61,7 +62,15 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const [sidebar, setSidebarOpen] = useState(false);
   const [categories, setCategories] = useState(categoriesList);
   const [transaction, setTransaction] = useState(transcation);
+  useEffect(() => {
+    let transactionLists = window.localStorage.getItem("transaction");
+    const parsedData = JSON.parse(transactionLists as any);
+    setTransaction(parsedData ? parsedData : transcation);
+    let categories = window.localStorage.getItem("categories");
+    const parsedDatacategories = JSON.parse(categories as any);
 
+    setCategories(parsedDatacategories ? parsedDatacategories : categoriesList);
+  }, []);
   return (
     <LayoutContext.Provider
       value={{

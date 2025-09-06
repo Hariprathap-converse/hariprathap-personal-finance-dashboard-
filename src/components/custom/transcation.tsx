@@ -183,7 +183,7 @@ const Transcation = () => {
 
             <CommandItem className="my-5 !mb-3">
               <div className="grid w-full max-w-sm items-center gap-3 ">
-                <Label htmlFor="categories">Action</Label>
+                <Label htmlFor="categories">Category</Label>
                 <Select
                   onValueChange={(events) => {
                     setAddTransactions((prev) => ({
@@ -276,6 +276,10 @@ const Transcation = () => {
                   onClick={() => {
                     setcommandOpen(false);
                     setTransaction((prev) => [...prev, addTransactions]);
+                    window.localStorage.setItem(
+                      "transaction",
+                      JSON.stringify([...transaction, addTransactions])
+                    );
                   }}
                 >
                   Create

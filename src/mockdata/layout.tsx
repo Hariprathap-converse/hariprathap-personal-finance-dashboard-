@@ -25,6 +25,12 @@ export const MockData = {
 
 export const categoriesList = [
   {
+    categoriesName: "Expenses",
+    color: "#4CAF50",
+    default: "Yes",
+    actions: "view",
+  },
+  {
     categoriesName: "Entertainment",
     color: "#9966FF",
     default: "Yes",

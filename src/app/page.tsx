@@ -1,11 +1,14 @@
-import { ChartPieSimple } from "@/components/chart";
+import { Chart } from "@/components/chart";
 import Dashboard from "@/components/custom/dashboard";
 
 export default function Home() {
   return (
     <>
       <Dashboard />
-      <ChartPieSimple />
+      <div className="w-[500px] pt-20">
+        <Chart/>
+      </div>
+      
     </>
   );
 }
