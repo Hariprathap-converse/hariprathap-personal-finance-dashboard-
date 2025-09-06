@@ -19,7 +19,7 @@ Not Implemented
 
 3) API Integration
 
-
+NOT Completed
 To Run
 
 git clone link => https://github.com/Hariprathap-converse/hariprathap-personal-finance-dashboard-.git
