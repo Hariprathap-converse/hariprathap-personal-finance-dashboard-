@@ -18,3 +18,12 @@ Not Implemented
 2) Filter
 
 3) API Integration
+
+
+To Run
+
+git clone link => https://github.com/Hariprathap-converse/hariprathap-personal-finance-dashboard-.git
+
+npm install 
+
+npm run dev
