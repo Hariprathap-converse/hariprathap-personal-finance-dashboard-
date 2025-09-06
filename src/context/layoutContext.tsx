@@ -1,7 +1,7 @@
 "use client";
-import { MockData } from "@/mockdata/layout";
+import { categoriesList, MockData, transcation } from "@/mockdata/layout";
 import { LucideProps } from "lucide-react";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface MockData {
   sidebar: {
@@ -16,18 +16,63 @@ interface MockData {
   appName: string;
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  categories: {
+    categoriesName: string;
+    color: string;
+    default: string;
+    actions: string;
+  }[];
+  setCategories: React.Dispatch<
+    React.SetStateAction<
+      {
+        categoriesName: string;
+        color: string;
+        default: string;
+        actions: string;
+      }[]
+    >
+  >;
+  transaction: {
+    id: string;
+    name: string;
+    category: string;
+    description: string;
+    amount: number;
+    date: string;
+    actions: string;
+  }[];
+  setTransaction: React.Dispatch<
+    React.SetStateAction<
+      {
+        id: string;
+        name: string;
+        category: string;
+        description: string;
+        amount: number;
+        date: string;
+        actions: string;
+      }[]
+    >
+  >;
 }
 const LayoutContext = createContext<MockData | undefined>(undefined);
 
 export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const [sidebar, setSidebarOpen] = useState(false);
+  const [categories, setCategories] = useState(categoriesList);
+  const [transaction, setTransaction] = useState(transcation);
+
   return (
     <LayoutContext.Provider
       value={{
         sidebar: MockData.sidebar,
-        appName:MockData.appName,
+        appName: MockData.appName,
         sidebarOpen: sidebar,
         setSidebarOpen: setSidebarOpen,
+        categories: categories,
+        setCategories: setCategories,
+        transaction: transaction,
+        setTransaction: setTransaction,
       }}
     >
       {children}

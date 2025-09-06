@@ -29,11 +29,11 @@ interface itemsProps {
 }
 export function AppSidebar({ items }: { items: itemsProps[] }) {
   return (
-    <Sidebar>
+    <Sidebar className="w-[200px] ">
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
+        <SidebarGroup className="pl-5 pt-5">
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent className="pt-3">
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
