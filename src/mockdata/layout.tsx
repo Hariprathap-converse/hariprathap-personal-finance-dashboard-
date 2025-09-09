@@ -1,4 +1,4 @@
-import { DollarSign, Home, LayoutGrid, Search, Settings } from "lucide-react";
+import { DollarSign, Home, LayoutGrid } from "lucide-react";
 
 export const MockData = {
   sidebar: {
@@ -69,8 +69,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1111,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "1",
@@ -78,8 +78,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "2",
@@ -87,8 +87,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "3",
@@ -96,8 +96,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "4",
@@ -105,8 +105,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "5",
@@ -114,8 +114,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "6",
@@ -123,8 +123,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "7",
@@ -132,8 +132,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "8",
@@ -141,8 +141,8 @@ export const transcation = [
     category: "Expenses",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "9",
@@ -150,8 +150,8 @@ export const transcation = [
     category: "Income",
     description: "",
     amount: 1000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/09/2025",
+    actions: "edit",
   },
   {
     id: "10",
@@ -159,7 +159,7 @@ export const transcation = [
     category: "Income",
     description: "",
     amount: 10000,
-    date: "9/6/2025",
-    actions: "view",
+    date: "06/10/2025",
+    actions: "edit",
   },
 ];

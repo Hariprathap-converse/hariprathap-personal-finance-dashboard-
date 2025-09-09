@@ -1,11 +1,4 @@
-import {
-  Calendar,
-  Home,
-  Inbox,
-  LucideProps,
-  Search,
-  Settings,
-} from "lucide-react";
+import { LucideProps } from "lucide-react";
 
 import {
   Sidebar,

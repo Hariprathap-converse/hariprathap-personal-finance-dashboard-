@@ -1,10 +1,18 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronDownIcon, PenOff, Plus, SquarePen } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EyeIcon,
+  PenOff,
+  Plus,
+  SquarePen,
+} from "lucide-react";
 
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -28,12 +36,41 @@ import { Textarea } from "../ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { useLayout } from "@/context/layoutContext";
+import TransactionView from "./transcation-view";
 
-const Transcation = () => {
-  const { categories, transaction, setTransaction } = useLayout();
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+
+interface FilterType {
+  category: null | string;
+  dateFilter: null | Date;
+  amount: null | string;
+  transactionName: null | string;
+}
+export interface TransactionViewType {
+  state: boolean;
+  transaction_id: null | string;
+}
+const Transcation = ({ dataLimit }: { dataLimit: number }) => {
+  const { categories, transcations, setTransactions } = useLayout();
   const [commandOpen, setcommandOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openView, setOpenView] = useState<TransactionViewType>({
+    state: false,
+    transaction_id: null,
+  });
+  const [openCalender, setOpenCalender] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [filterConditions, setFilterConditions] = useState<FilterType>({
+    category: null,
+    dateFilter: null,
+    amount: null,
+    transactionName: null,
+  });
+
   const [addTransactions, setAddTransactions] = useState({
     id: "",
     name: "",
@@ -43,8 +80,54 @@ const Transcation = () => {
     date: "",
     actions: "view",
   });
+  let filterData = transcations.filter((items) => {
+    if (
+      filterConditions.transactionName &&
+      items.name.includes(filterConditions.transactionName)
+    ) {
+      return items;
+    }
+    if (
+      filterConditions.category &&
+      items.category.startsWith(filterConditions.category)
+    ) {
+      return items;
+    }
+    if (
+      filterConditions.dateFilter &&
+      items.date == filterConditions.dateFilter.toLocaleDateString("en-GB")
+    ) {
+      return items;
+    }
+    if (
+      filterConditions.amount &&
+      items.amount >= Number(filterConditions.amount)
+    ) {
+      return items;
+    }
+    if (
+      !filterConditions.transactionName &&
+      !filterConditions.category &&
+      !filterConditions.amount &&
+      !filterConditions.dateFilter
+    ) {
+      return items;
+    }
+  });
   const removeOutline =
     "focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:ring-transparent";
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(dataLimit);
+
+  const totalPages = Math.ceil(filterData.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  filterData = filterData.slice(startIndex, endIndex);
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
   return (
     <Card>
       <CardHeader className="flex w-full items-center justify-between">
@@ -58,10 +141,135 @@ const Transcation = () => {
           <Plus /> Add Categories
         </Button>
       </CardHeader>
-      <CardContent className="h-fit">
-        <div className="w-full flex justify-center ">
-          <Table className="mx-auto">
-            <TableHeader className="h-[60px]">
+      <CardContent className="h-fit flex flex-col gap-5">
+        {openView.state && (
+          <TransactionView
+            openView={openView}
+            setOpenView={setOpenView}
+            transcation={transcations.find((item) => {
+              return item.id == openView.transaction_id;
+            })}
+          />
+        )}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4   p-5 pb-6 rounded-sm border w-full gap-3  ">
+          <div className="h-full flex flex-col gap-2 ">
+            <label htmlFor="category">By Category</label>
+            <Select
+              onValueChange={(events) => {
+                setFilterConditions((prev) => ({
+                  ...prev,
+                  category: events,
+                }));
+              }}
+            >
+              <SelectTrigger
+                id="category"
+                name="category"
+                className={cn(
+                  "rounded-[4px] w-full hover:bg-background",
+                  removeOutline,
+                )}
+              >
+                <SelectValue placeholder="Search by Category" />
+              </SelectTrigger>
+              <SelectContent className="rounded-sm overflow-auto">
+                {categories?.map((category: any) => (
+                  <SelectItem
+                    key={category.categoriesName}
+                    value={category.categoriesName}
+                    className="rounded-sm"
+                  >
+                    {category.categoriesName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="h-full flex flex-col gap-2 ">
+            <label htmlFor="date">Date</label>
+            <Popover
+              open={openCalender}
+              onOpenChange={() => {
+                setOpenCalender((prev) => !prev);
+              }}
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
+                    removeOutline,
+                    " justify-between text-gray-500 font-normal text-left w-full flex ",
+                  )}
+                >
+                  <span>Select a Calender</span>
+                  <ChevronDownIcon className="size-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-fit border-none">
+                <Calendar
+                  mode="single"
+                  defaultMonth={filterConditions.dateFilter as Date}
+                  selected={filterConditions.dateFilter as Date}
+                  onSelect={(date) => {
+                    setFilterConditions((prev: any) => ({
+                      ...prev,
+                      dateFilter: date,
+                    }));
+                  }}
+                  className="rounded-lg border shadow-sm "
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="h-full flex flex-col gap-2 ">
+            <label htmlFor="amount">Amount</label>
+            <Input
+              type="number"
+              id="amount"
+              name="amount"
+              className={cn(
+                "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
+                removeOutline,
+              )}
+              value={filterConditions.amount ?? ""}
+              onChange={(e) => {
+                setFilterConditions((prev) => ({
+                  ...prev,
+                  amount: e.target.value,
+                }));
+              }}
+              placeholder="Search by Amount"
+            ></Input>
+          </div>
+          <div className="h-full flex flex-col gap-2 ">
+            <label htmlFor="transcation_name">Transcation Name </label>
+            <Input
+              id="transcation_name"
+              name="transcation_name"
+              className={cn(
+                "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
+                removeOutline,
+              )}
+              value={filterConditions.transactionName ?? ""}
+              onChange={(e) => {
+                setFilterConditions((prev) => ({
+                  ...prev,
+                  transactionName: e.target.value,
+                }));
+              }}
+              placeholder="Search by Transcation Name "
+            ></Input>
+          </div>
+        </div>
+        <div
+          className={cn(
+            "w-full flex justify-center border   rounded-sm px-2 py-1 ",
+            dataLimit == 5 ? "h-[380px]" : "h-[550px]",
+          )}
+        >
+          <Table className="mx-auto relative overflow-auto ">
+            <TableHeader className="h-[60px] sticky top-0 bg-background">
               <TableRow className="text-center">
                 <TableHead className="text-start text-[16px]">Name</TableHead>
                 <TableHead className="text-start text-[16px]">
@@ -77,7 +285,7 @@ const Transcation = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transaction.map((transcation) => (
+              {filterData.map((transcation) => (
                 <TableRow
                   key={transcation.name}
                   className="h-[60px] text-gray-800"
@@ -95,7 +303,16 @@ const Transcation = () => {
                     {transcation.date}
                   </TableCell>
                   <TableCell className={cn("text-center")}>
-                    <span className="flex w-full justify-center">
+                    <span className="flex w-full justify-center gap-3">
+                      <EyeIcon
+                        onClick={() => {
+                          setOpenView((prev) => ({
+                            state: !prev.state,
+                            transaction_id: transcation.id,
+                          }));
+                        }}
+                        className="h-4 w-4 text-gray-600 cursor-pointer"
+                      />
                       {transcation.actions == "edit" ? (
                         <SquarePen className="h-4 w-4 text-gray-600 cursor-pointer" />
                       ) : (
@@ -110,6 +327,45 @@ const Transcation = () => {
             </TableBody>
           </Table>
         </div>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <Button
+                variant={"outline"}
+                className="cursor-pointer"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeftIcon />
+                <span className="hidden sm:block">Previous</span>
+              </Button>
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <Button
+                className="cursor-pointer"
+                variant={"outline"}
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                disabled={currentPage === i + 1}
+              >
+                {i + 1}
+              </Button>
+            ))}
+            <PaginationItem>
+              <Button
+                className="cursor-pointer"
+                variant={"outline"}
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                <span className="*:hidden sm:block">Next</span>
+                <ChevronRightIcon />
+              </Button>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
         <CommandDialog
           className=""
           open={commandOpen}
@@ -126,10 +382,9 @@ const Transcation = () => {
                   placeholder="Name of Category"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline
+                    removeOutline,
                   )}
                   onBlur={(e) => {
-                    console.log("e.target.value", e.target.value);
                     setAddTransactions((prev) => ({
                       ...prev,
                       name: e.target.value,
@@ -147,10 +402,9 @@ const Transcation = () => {
                   placeholder="Amount for this Transaction"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline
+                    removeOutline,
                   )}
                   onBlur={(e) => {
-                    console.log("e.target.value", e.target.value);
                     setAddTransactions((prev) => ({
                       ...prev,
                       amount: Number(e.target.value),
@@ -168,7 +422,7 @@ const Transcation = () => {
                   id="description"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline
+                    removeOutline,
                   )}
                   placeholder="Type your message here."
                   onBlur={(e) => {
@@ -195,7 +449,7 @@ const Transcation = () => {
                   <SelectTrigger
                     className={cn(
                       "rounded-[4px] w-full hover:bg-background",
-                      removeOutline
+                      removeOutline,
                     )}
                   >
                     <SelectValue placeholder="Action" />
@@ -218,7 +472,7 @@ const Transcation = () => {
             <CommandItem className="my-5 !mb-3">
               <div className="grid w-full max-w-sm items-center gap-3">
                 <Label htmlFor="date" className="px-1">
-                  Date of birth
+                  Date of Transaction
                 </Label>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
@@ -227,10 +481,10 @@ const Transcation = () => {
                       id="date"
                       className={cn(
                         "rounded-[4px] justify-between font-normal  hover:border hover:bg-background  focus:bg-background",
-                        removeOutline
+                        removeOutline,
                       )}
                     >
-                      {date ? date.toLocaleDateString() : "Select date"}
+                      {date ? date.toLocaleDateString("en-GB") : "Select date"}
                       <ChevronDownIcon />
                     </Button>
                   </PopoverTrigger>
@@ -241,7 +495,7 @@ const Transcation = () => {
                     <Calendar
                       className={cn(
                         "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                        removeOutline
+                        removeOutline,
                       )}
                       mode="single"
                       selected={date}
@@ -251,7 +505,7 @@ const Transcation = () => {
                         setOpen(false);
                         setAddTransactions((prev: any) => ({
                           ...prev,
-                          date: date?.toLocaleDateString(),
+                          date: date?.toLocaleDateString("en-GB"),
                         }));
                       }}
                     />
@@ -275,10 +529,10 @@ const Transcation = () => {
                   className="cursor-pointer"
                   onClick={() => {
                     setcommandOpen(false);
-                    setTransaction((prev) => [...prev, addTransactions]);
+                    setTransactions((prev) => [...prev, addTransactions]);
                     window.localStorage.setItem(
                       "transaction",
-                      JSON.stringify([...transaction, addTransactions])
+                      JSON.stringify([...transcations, addTransactions]),
                     );
                   }}
                 >

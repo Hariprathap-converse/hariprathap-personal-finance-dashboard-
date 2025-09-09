@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { categoriesList } from "@/mockdata/layout";
 import { useLayout } from "@/context/layoutContext";
 
 const Categories = () => {
@@ -136,7 +135,7 @@ const Categories = () => {
                   placeholder="Name of Category"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline
+                    removeOutline,
                   )}
                   onBlur={(e) => {
                     console.log("e.target.value", e.target.value);
@@ -157,7 +156,7 @@ const Categories = () => {
                   placeholder="color"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline
+                    removeOutline,
                   )}
                   onBlur={(e) => {
                     console.log("e.target.value", e.target.value);
@@ -174,7 +173,7 @@ const Categories = () => {
                   <SelectTrigger
                     className={cn(
                       "rounded-[4px] w-full hover:bg-background",
-                      removeOutline
+                      removeOutline,
                     )}
                   >
                     <SelectValue placeholder="Action" />
@@ -207,7 +206,7 @@ const Categories = () => {
                     setCategories((prev) => [...prev, inputValue]);
                     window.localStorage.setItem(
                       "categories",
-                      JSON.stringify([...categories, inputValue])
+                      JSON.stringify([...categories, inputValue]),
                     );
                     setCommandBox(false);
                     setInputValue({

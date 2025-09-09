@@ -22,7 +22,9 @@ const SiderbarWrapper = ({
       <div
         className={cn(
           "grid grid-rows-1 h-screen w-full",
-          sidebarOpen == true ? "grid-cols-[200px_1fr]" : "grid-cols-[auto_1fr]"
+          sidebarOpen == true
+            ? "grid-cols-[200px_1fr]"
+            : "grid-cols-[auto_1fr]",
         )}
       >
         <nav className={cn("shadow-sm")}>

@@ -3,7 +3,7 @@ import Transcation from "@/components/custom/transcation";
 const page = () => {
   return (
     <div className="p-5">
-      <Transcation />
+      <Transcation dataLimit={10} />
     </div>
   );
 };

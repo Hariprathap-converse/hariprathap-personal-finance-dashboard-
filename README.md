@@ -1,29 +1,35 @@
 Implemented
 
-1) Responsive Design
+1. Responsive Design
 
-2) table View 
+2. table View
 
-3) Add Transcation
+3. Add Transcation
 
-4) Add categories
+4. Add categories
 
-5) persist memory  Handle
+5. persist memory Handle
 
+6. pagnation
+
+7. Filter
+
+8. grap and charts
+
+9. Dashboard Overview and Data Visualization
+
+10. Transaction Management
 
 Not Implemented
 
-1) pagnation 
+1. Api intergration
 
-2) Filter
+## NOT Completed
 
-3) API Integration
-
-NOT Completed
 To Run
 
 git clone link => https://github.com/Hariprathap-converse/hariprathap-personal-finance-dashboard-.git
 
-npm install 
+npm install
 
 npm run dev
