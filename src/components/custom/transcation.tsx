@@ -80,40 +80,110 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
     date: "",
     actions: "view",
   });
-  let filterData = transcations.filter((items) => {
-    if (
-      filterConditions.transactionName &&
-      items.name.includes(filterConditions.transactionName)
-    ) {
-      return items;
-    }
-    if (
-      filterConditions.category &&
-      items.category.startsWith(filterConditions.category)
-    ) {
-      return items;
-    }
-    if (
-      filterConditions.dateFilter &&
-      items.date == filterConditions.dateFilter.toLocaleDateString("en-GB")
-    ) {
-      return items;
-    }
-    if (
-      filterConditions.amount &&
-      items.amount >= Number(filterConditions.amount)
-    ) {
-      return items;
-    }
-    if (
-      !filterConditions.transactionName &&
-      !filterConditions.category &&
-      !filterConditions.amount &&
-      !filterConditions.dateFilter
-    ) {
-      return items;
-    }
-  });
+
+  const validateCategory = (
+    items: {
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      amount: number;
+      date: string;
+      actions: string;
+    }[]
+  ) => {
+    const filtered = items.filter((item) => {
+      if (
+        filterConditions.category &&
+        item.category.startsWith(filterConditions.category)
+      ) {
+        return item;
+      }
+    });
+    return filtered;
+  };
+
+  const validateAmount = (
+    items: {
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      amount: number;
+      date: string;
+      actions: string;
+    }[]
+  ) => {
+    const filtered = items.filter((item) => {
+      if (
+        filterConditions.amount &&
+        item.amount >= Number(filterConditions.amount)
+      ) {
+        console.log(item);
+        return item;
+      }
+    });
+    return filtered;
+  };
+
+  const validateDate = (
+    items: {
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      amount: number;
+      date: string;
+      actions: string;
+    }[]
+  ) => {
+    const filtered = items.filter((item) => {
+      if (
+        filterConditions.dateFilter &&
+        item.date == filterConditions.dateFilter.toLocaleDateString("en-GB")
+      ) {
+        return item;
+      }
+    });
+    return filtered;
+  };
+
+  const validatetransactionName = (
+    items: {
+      id: string;
+      name: string;
+      category: string;
+      description: string;
+      amount: number;
+      date: string;
+      actions: string;
+    }[]
+  ) => {
+    const filtered = items.filter((item) => {
+      if (
+        filterConditions.transactionName &&
+        item.name.startsWith(filterConditions.transactionName)
+      ) {
+        return item;
+      }
+    });
+    return filtered;
+  };
+
+  let filterData = [...transcations];
+  if (filterConditions.category) {
+    filterData = validateCategory(filterData);
+  }
+  if (filterConditions.amount) {
+    filterData = validateAmount(filterData);
+  }
+  if (filterConditions.dateFilter) {
+    filterData = validateDate(filterData);
+  }
+  if (filterConditions.transactionName) {
+    filterData = validatetransactionName(filterData);
+  }
+
   const removeOutline =
     "focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:ring-transparent";
 
@@ -167,7 +237,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                 name="category"
                 className={cn(
                   "rounded-[4px] w-full hover:bg-background",
-                  removeOutline,
+                  removeOutline
                 )}
               >
                 <SelectValue placeholder="Search by Category" />
@@ -199,10 +269,14 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
                     removeOutline,
-                    " justify-between text-gray-500 font-normal text-left w-full flex ",
+                    " justify-between text-gray-500 font-normal text-left w-full flex "
                   )}
                 >
-                  <span>Select a Calender</span>
+                  <span className={cn(filterConditions.dateFilter?"text-foreground":"")}>
+                    {filterConditions.dateFilter
+                      ? filterConditions.dateFilter.toLocaleDateString("en-GB")
+                      : "Select a Date"}
+                  </span>
                   <ChevronDownIcon className="size-4 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -230,7 +304,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
               name="amount"
               className={cn(
                 "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
-                removeOutline,
+                removeOutline
               )}
               value={filterConditions.amount ?? ""}
               onChange={(e) => {
@@ -249,7 +323,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
               name="transcation_name"
               className={cn(
                 "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
-                removeOutline,
+                removeOutline
               )}
               value={filterConditions.transactionName ?? ""}
               onChange={(e) => {
@@ -265,7 +339,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
         <div
           className={cn(
             "w-full flex justify-center border   rounded-sm px-2 py-1 ",
-            dataLimit == 5 ? "h-[380px]" : "h-[550px]",
+            dataLimit == 5 ? "h-[380px]" : "h-[550px]"
           )}
         >
           <Table className="mx-auto relative overflow-auto ">
@@ -382,7 +456,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   placeholder="Name of Category"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline,
+                    removeOutline
                   )}
                   onBlur={(e) => {
                     setAddTransactions((prev) => ({
@@ -402,7 +476,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   placeholder="Amount for this Transaction"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline,
+                    removeOutline
                   )}
                   onBlur={(e) => {
                     setAddTransactions((prev) => ({
@@ -422,7 +496,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   id="description"
                   className={cn(
                     "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                    removeOutline,
+                    removeOutline
                   )}
                   placeholder="Type your message here."
                   onBlur={(e) => {
@@ -449,7 +523,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   <SelectTrigger
                     className={cn(
                       "rounded-[4px] w-full hover:bg-background",
-                      removeOutline,
+                      removeOutline
                     )}
                   >
                     <SelectValue placeholder="Action" />
@@ -481,7 +555,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                       id="date"
                       className={cn(
                         "rounded-[4px] justify-between font-normal  hover:border hover:bg-background  focus:bg-background",
-                        removeOutline,
+                        removeOutline
                       )}
                     >
                       {date ? date.toLocaleDateString("en-GB") : "Select date"}
@@ -495,7 +569,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                     <Calendar
                       className={cn(
                         "rounded-[4px]  hover:border hover:bg-background  focus:bg-background",
-                        removeOutline,
+                        removeOutline
                       )}
                       mode="single"
                       selected={date}
@@ -532,7 +606,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                     setTransactions((prev) => [...prev, addTransactions]);
                     window.localStorage.setItem(
                       "transaction",
-                      JSON.stringify([...transcations, addTransactions]),
+                      JSON.stringify([...transcations, addTransactions])
                     );
                   }}
                 >

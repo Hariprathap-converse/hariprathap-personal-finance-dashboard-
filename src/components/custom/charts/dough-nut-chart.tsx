@@ -25,7 +25,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Filler,
-  Legend,
+  Legend
 );
 
 export default function DoughnutCharts() {
