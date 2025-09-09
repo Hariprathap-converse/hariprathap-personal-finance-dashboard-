@@ -1,9 +1,9 @@
-import Transcation from "@/components/custom/transcation";
+import Transaction from "@/components/custom/transaction-table";
 
 const page = () => {
   return (
     <div className="p-5">
-      <Transcation dataLimit={10} />
+      <Transaction dataLimit={10} />
     </div>
   );
 };

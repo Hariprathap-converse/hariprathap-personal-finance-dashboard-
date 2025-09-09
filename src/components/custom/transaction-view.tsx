@@ -5,14 +5,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TransactionViewType } from "./transcation";
 import { Label } from "../ui/label";
 import { X } from "lucide-react";
+import { TransactionViewType } from "./transaction-table";
 
 interface TransactionViewProps {
   openView: TransactionViewType;
   setOpenView: React.Dispatch<SetStateAction<TransactionViewType>>;
-  transcation:
+  transaction:
     | {
         id: string;
         name: string;
@@ -28,9 +28,9 @@ interface TransactionViewProps {
 const TransactionView: React.FC<TransactionViewProps> = ({
   openView,
   setOpenView,
-  transcation,
+  transaction,
 }) => {
-  console.log("transaction", transcation);
+  console.log("transaction", transaction);
   return (
     <Dialog
       open={openView.state}
@@ -55,44 +55,44 @@ const TransactionView: React.FC<TransactionViewProps> = ({
               }));
             }}
           />
-          <DialogTitle className="text-2xl">Transcation overview</DialogTitle>
+          <DialogTitle className="text-2xl">Transaction overview</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-5 justify-center border p-5 rounded-sm bg-[hsl(0,0%,98%)]">
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Name</Label>
+            <Label>Transaction Name</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
-              {transcation?.name}
+              {transaction?.name}
             </span>
           </div>
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Category</Label>
+            <Label>Transaction Category</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
               {" "}
-              {transcation?.category}
+              {transaction?.category}
             </span>
           </div>
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Description</Label>
+            <Label>Transaction Description</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
-              {transcation?.description ? transcation.description : "Null"}
+              {transaction?.description ? transaction.description : "Null"}
             </span>
           </div>
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Amount</Label>
+            <Label>Transaction Amount</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
-              {transcation?.amount}
+              {transaction?.amount}
             </span>
           </div>
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Date</Label>
+            <Label>Transaction Date</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
-              {transcation?.date}
+              {transaction?.date}
             </span>
           </div>
           <div className="grid  gap-2 items-center">
-            <Label>Transcation Actions</Label>
+            <Label>Transaction Actions</Label>
             <span className="h-full w-full p-1 pl-2 border rounded-sm">
-              {transcation?.actions}
+              {transaction?.actions}
             </span>
           </div>
         </div>

@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 export default function BarChart() {
-  const { transcations } = useLayout();
+  const { transactions } = useLayout();
   let income = 0;
   let totalExpenses = 0;
   let totalBalance = 0;
@@ -45,7 +45,7 @@ export default function BarChart() {
     date: string;
     actions: string;
   }[] = [];
-  transcations.filter((item) => {
+  transactions.filter((item) => {
     item.category != "Income"
       ? (totalExpenses += item.amount)
       : (income += item.amount);
@@ -55,7 +55,7 @@ export default function BarChart() {
 
   removeDuplicate = new Set(categoryList);
 
-  transcations.forEach((item) => {
+  transactions.forEach((item) => {
     removeDuplicate.forEach((origalCategory) => {
       if (item.category == origalCategory) {
         expenses.push(item);

@@ -62,10 +62,10 @@ export const categoriesList = [
   },
 ];
 
-export const transcation = [
+export const transaction = [
   {
     id: "0",
-    name: "Transcation 1",
+    name: "Transaction 1",
     category: "Expenses",
     description: "",
     amount: 1111,
@@ -74,7 +74,7 @@ export const transcation = [
   },
   {
     id: "1",
-    name: "Transcation 11",
+    name: "Transaction 11",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -83,7 +83,7 @@ export const transcation = [
   },
   {
     id: "2",
-    name: "Transcation2",
+    name: "Transaction2",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -92,7 +92,7 @@ export const transcation = [
   },
   {
     id: "3",
-    name: "Transcation3",
+    name: "Transaction3",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -101,7 +101,7 @@ export const transcation = [
   },
   {
     id: "4",
-    name: "Transcation4",
+    name: "Transaction4",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -110,7 +110,7 @@ export const transcation = [
   },
   {
     id: "5",
-    name: "Transcation5",
+    name: "Transaction5",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -119,7 +119,7 @@ export const transcation = [
   },
   {
     id: "6",
-    name: "Transcation6",
+    name: "Transaction6",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -128,7 +128,7 @@ export const transcation = [
   },
   {
     id: "7",
-    name: "Transcation7",
+    name: "Transaction7",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -137,7 +137,7 @@ export const transcation = [
   },
   {
     id: "8",
-    name: "Transcation8",
+    name: "Transaction8",
     category: "Expenses",
     description: "",
     amount: 1000,
@@ -146,7 +146,7 @@ export const transcation = [
   },
   {
     id: "9",
-    name: "Transcation9",
+    name: "Transaction9",
     category: "Income",
     description: "",
     amount: 1000,
@@ -155,7 +155,7 @@ export const transcation = [
   },
   {
     id: "10",
-    name: "Transcation10",
+    name: "Transaction10",
     category: "Income",
     description: "",
     amount: 10000,

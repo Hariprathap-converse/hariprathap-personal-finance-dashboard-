@@ -4,7 +4,7 @@ Implemented
 
 2. table View
 
-3. Add Transcation
+3. Add Transaction
 
 4. Add categories
 

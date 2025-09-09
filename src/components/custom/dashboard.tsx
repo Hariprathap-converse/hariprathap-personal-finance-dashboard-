@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useLayout } from "@/context/layoutContext";
-import Transcation from "./transcation";
+import Transaction from "./transaction-table";
 interface dashboardProps {
   title: string;
   description: string;
@@ -41,17 +41,17 @@ const Dashboard = () => {
       value: "1,000",
     },
   };
-  const { transcations } = useLayout();
+  const { transactions } = useLayout();
   let totalIncomeAmount = 0;
   let totalExpensesAmount = 0;
 
-  for (let index = 0; index < transcations.length; index++) {
+  for (let index = 0; index < transactions.length; index++) {
     totalExpensesAmount +=
-      transcations[index].category !== "Income"
-        ? transcations[index].amount
+      transactions[index].category !== "Income"
+        ? transactions[index].amount
         : 0;
     totalIncomeAmount +=
-      transcations[index].category == "Income" ? transcations[index].amount : 0;
+      transactions[index].category == "Income" ? transactions[index].amount : 0;
   }
 
   let totalBalanceAmount = totalIncomeAmount - totalExpensesAmount;
@@ -85,7 +85,7 @@ const Dashboard = () => {
         )}
       </div>
       <div className="w-[98%]">
-        <Transcation dataLimit={5} />
+        <Transaction dataLimit={5} />
       </div>
     </div>
   );

@@ -29,14 +29,14 @@ ChartJS.register(
 );
 
 export default function DoughnutCharts() {
-  const { transcations } = useLayout();
+  const { transactions } = useLayout();
   let income = 0;
   let totalExpenses = 0;
   let totalBalance = 0;
   let categoryList: string[] = [];
   let removeDuplicate;
   const expenses: any[] = [];
-  transcations.filter((item) => {
+  transactions.filter((item) => {
     item.category != "Income"
       ? (totalExpenses += item.amount)
       : (income += item.amount);
@@ -45,7 +45,7 @@ export default function DoughnutCharts() {
   });
   removeDuplicate = new Set(categoryList);
 
-  transcations.forEach((item) => {
+  transactions.forEach((item) => {
     removeDuplicate.forEach((origalCategory) => {
       if (item.category == origalCategory) {
         expenses.push(item);

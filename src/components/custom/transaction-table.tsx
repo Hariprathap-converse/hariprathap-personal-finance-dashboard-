@@ -9,10 +9,11 @@ import {
   PenOff,
   Plus,
   SquarePen,
+  XCircle,
 } from "lucide-react";
 
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -36,37 +37,63 @@ import { Textarea } from "../ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { useLayout } from "@/context/layoutContext";
-import TransactionView from "./transcation-view";
+import TransactionView from "./transaction-view";
 
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 interface FilterType {
   category: null | string;
-  dateFilter: null | Date;
+  fromDate: null | Date;
+  toDate: null | Date;
   amount: null | string;
   transactionName: null | string;
 }
+
+interface MultipleConditionFilter {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  amount: number;
+  date: string;
+  actions: string;
+}
+
 export interface TransactionViewType {
   state: boolean;
   transaction_id: null | string;
 }
-const Transcation = ({ dataLimit }: { dataLimit: number }) => {
-  const { categories, transcations, setTransactions } = useLayout();
+const Transaction = ({ dataLimit }: { dataLimit: number }) => {
+  const { categories, transactions, setTransactions } = useLayout();
   const [commandOpen, setcommandOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [openView, setOpenView] = useState<TransactionViewType>({
     state: false,
     transaction_id: null,
   });
-  const [openCalender, setOpenCalender] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(
+    undefined
+  );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(dataLimit);
+  const [openCalender, setOpenCalender] = useState({
+    from: false,
+    to: false,
+  });
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [filterConditions, setFilterConditions] = useState<FilterType>({
     category: null,
-    dateFilter: null,
+    fromDate: null,
+    toDate: null,
     amount: null,
     transactionName: null,
   });
@@ -80,18 +107,10 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
     date: "",
     actions: "view",
   });
-
-  const validateCategory = (
-    items: {
-      id: string;
-      name: string;
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-      actions: string;
-    }[]
-  ) => {
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterConditions]);
+  const validateCategory = (items: MultipleConditionFilter[]) => {
     const filtered = items.filter((item) => {
       if (
         filterConditions.category &&
@@ -103,17 +122,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
     return filtered;
   };
 
-  const validateAmount = (
-    items: {
-      id: string;
-      name: string;
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-      actions: string;
-    }[]
-  ) => {
+  const validateAmount = (items: MultipleConditionFilter[]) => {
     const filtered = items.filter((item) => {
       if (
         filterConditions.amount &&
@@ -126,39 +135,41 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
     return filtered;
   };
 
-  const validateDate = (
-    items: {
-      id: string;
-      name: string;
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-      actions: string;
-    }[]
-  ) => {
-    const filtered = items.filter((item) => {
-      if (
-        filterConditions.dateFilter &&
-        item.date == filterConditions.dateFilter.toLocaleDateString("en-GB")
-      ) {
-        return item;
-      }
-    });
-    return filtered;
+  const parseDDMMYYYY = (dateStr: string): Date => {
+    const [day, month, year] = dateStr.split("/").map(Number);
+    return new Date(year, month - 1, day);
   };
 
-  const validatetransactionName = (
-    items: {
-      id: string;
-      name: string;
-      category: string;
-      description: string;
-      amount: number;
-      date: string;
-      actions: string;
-    }[]
-  ) => {
+  const validateDate = (items: MultipleConditionFilter[], period: string) => {
+    return items.filter((item) => {
+      if (!item.date) return false;
+
+      const itemDate = parseDDMMYYYY(item.date);
+
+      if (filterConditions.fromDate && period === "from") {
+        return itemDate >= filterConditions.fromDate;
+      }
+
+      if (filterConditions.toDate && period === "to") {
+        return itemDate <= filterConditions.toDate;
+      }
+
+      if (
+        filterConditions.fromDate &&
+        filterConditions.toDate &&
+        period === "both"
+      ) {
+        return (
+          itemDate >= filterConditions.fromDate &&
+          itemDate <= filterConditions.toDate
+        );
+      }
+
+      return false;
+    });
+  };
+
+  const validatetransactionName = (items: MultipleConditionFilter[]) => {
     const filtered = items.filter((item) => {
       if (
         filterConditions.transactionName &&
@@ -170,15 +181,21 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
     return filtered;
   };
 
-  let filterData = [...transcations];
+  let filterData = [...transactions];
   if (filterConditions.category) {
     filterData = validateCategory(filterData);
   }
   if (filterConditions.amount) {
     filterData = validateAmount(filterData);
   }
-  if (filterConditions.dateFilter) {
-    filterData = validateDate(filterData);
+  if (filterConditions.fromDate || filterConditions.toDate) {
+    filterData = validateDate(
+      filterData,
+      filterConditions.fromDate ? "from" : "to"
+    );
+  }
+  if (filterConditions.fromDate && filterConditions.toDate) {
+    filterData = validateDate(filterData, "both");
   }
   if (filterConditions.transactionName) {
     filterData = validatetransactionName(filterData);
@@ -186,9 +203,6 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
 
   const removeOutline =
     "focus:outline-none focus-visible:outline-none focus-visible:ring-offset-0 focus-visible:ring-transparent";
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(dataLimit);
 
   const totalPages = Math.ceil(filterData.length / itemsPerPage);
 
@@ -201,36 +215,78 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
   return (
     <Card>
       <CardHeader className="flex w-full items-center justify-between">
-        <CardTitle>Transcation</CardTitle>
-        <Button
-          onClick={() => {
-            setcommandOpen((prev) => !prev);
-          }}
-          className="cursor-pointer"
-        >
-          <Plus /> Add Categories
-        </Button>
+        <CardTitle>Transaction</CardTitle>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => {
+              setFilterConditions(() => ({
+                category: null,
+                fromDate: null,
+                toDate: null,
+                amount: null,
+                transactionName: null,
+              }));
+              setSelectedValue("");
+            }}
+            variant={"outline"}
+            className="w-fit  "
+          >
+            Clear All Fillter
+          </Button>
+          <Button
+            onClick={() => {
+              setcommandOpen((prev) => !prev);
+            }}
+            className="cursor-pointer"
+          >
+            <Plus /> Add Categories
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="h-fit flex flex-col gap-5">
         {openView.state && (
           <TransactionView
             openView={openView}
             setOpenView={setOpenView}
-            transcation={transcations.find((item) => {
+            transaction={transactions.find((item) => {
               return item.id == openView.transaction_id;
             })}
           />
         )}
         <div className="grid md:grid-cols-2 lg:grid-cols-4   p-5 pb-6 rounded-sm border w-full gap-3  ">
-          <div className="h-full flex flex-col gap-2 ">
-            <label htmlFor="category">By Category</label>
+          <div className="h-full relative  flex flex-col gap-2 ">
+            {filterConditions.category && (
+              <Tooltip>
+                <TooltipTrigger className="absolute right-2 top-2 h-fit w-fit">
+                  <XCircle
+                    onClick={() => {
+                      setFilterConditions((prev) => ({
+                        ...prev,
+                        category: null,
+                      }));
+                      setSelectedValue("");
+                    }}
+                    className="h-4 w-4 text-gray-600 cursor-pointer"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear Category Filter</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <label className="" htmlFor="category">
+              By Category
+            </label>
+
             <Select
               onValueChange={(events) => {
                 setFilterConditions((prev) => ({
                   ...prev,
                   category: events,
                 }));
+                setSelectedValue(events);
               }}
+              value={selectedValue}
             >
               <SelectTrigger
                 id="category"
@@ -240,7 +296,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   removeOutline
                 )}
               >
-                <SelectValue placeholder="Search by Category" />
+                {selectedValue ? selectedValue : "Search by Category"}
               </SelectTrigger>
               <SelectContent className="rounded-sm overflow-auto">
                 {categories?.map((category: any) => (
@@ -255,46 +311,103 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
               </SelectContent>
             </Select>
           </div>
-          <div className="h-full flex flex-col gap-2 ">
-            <label htmlFor="date">Date</label>
-            <Popover
-              open={openCalender}
-              onOpenChange={() => {
-                setOpenCalender((prev) => !prev);
-              }}
-            >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
-                    removeOutline,
-                    " justify-between text-gray-500 font-normal text-left w-full flex "
-                  )}
-                >
-                  <span className={cn(filterConditions.dateFilter?"text-foreground":"")}>
-                    {filterConditions.dateFilter
-                      ? filterConditions.dateFilter.toLocaleDateString("en-GB")
-                      : "Select a Date"}
-                  </span>
-                  <ChevronDownIcon className="size-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-0 w-fit border-none">
-                <Calendar
-                  mode="single"
-                  defaultMonth={filterConditions.dateFilter as Date}
-                  selected={filterConditions.dateFilter as Date}
-                  onSelect={(date) => {
-                    setFilterConditions((prev: any) => ({
-                      ...prev,
-                      dateFilter: date,
-                    }));
-                  }}
-                  className="rounded-lg border shadow-sm "
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="group h-full  grid grid-cols-2 px-2 bg-accent border rounded-sm justify-center gap-2">
+            <div className="h-full flex flex-col gap-2 pb-2 ">
+              <label htmlFor="date">From Date</label>
+              <Popover
+                open={openCalender.from}
+                onOpenChange={() => {
+                  setOpenCalender((prev) => ({
+                    ...prev,
+                    from: !prev.from,
+                  }));
+                }}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
+                      removeOutline,
+                      " justify-between text-gray-500 font-normal text-left w-full flex "
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        filterConditions.fromDate ? "text-foreground" : ""
+                      )}
+                    >
+                      {filterConditions.fromDate
+                        ? filterConditions.fromDate.toLocaleDateString("en-GB")
+                        : "From Date"}
+                    </span>
+                    <ChevronDownIcon className="size-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-fit border-none">
+                  <Calendar
+                    mode="single"
+                    defaultMonth={filterConditions.fromDate as Date}
+                    selected={filterConditions.fromDate as Date}
+                    onSelect={(date) => {
+                      setFilterConditions((prev: any) => ({
+                        ...prev,
+                        fromDate: date,
+                      }));
+                    }}
+                    className="rounded-lg border shadow-sm "
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="h-full flex flex-col gap-2 ">
+              <label htmlFor="date">To Date</label>
+              <Popover
+                open={openCalender.to}
+                onOpenChange={() => {
+                  setOpenCalender((prev) => ({
+                    ...prev,
+                    to: !prev.to,
+                  }));
+                }}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
+                      removeOutline,
+                      " justify-between text-gray-500 font-normal text-left w-full flex "
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        filterConditions.toDate ? "text-foreground" : ""
+                      )}
+                    >
+                      {filterConditions.toDate
+                        ? filterConditions.toDate.toLocaleDateString("en-GB")
+                        : "To Date"}
+                    </span>
+                    <ChevronDownIcon className="size-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-fit border-none">
+                  <Calendar
+                    mode="single"
+                    defaultMonth={filterConditions.toDate as Date}
+                    selected={filterConditions.toDate as Date}
+                    onSelect={(date) => {
+                      setFilterConditions((prev: any) => ({
+                        ...prev,
+                        toDate: date,
+                      }));
+                    }}
+                    className="rounded-lg border shadow-sm "
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <div className="h-full flex flex-col gap-2 ">
             <label htmlFor="amount">Amount</label>
@@ -317,10 +430,10 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
             ></Input>
           </div>
           <div className="h-full flex flex-col gap-2 ">
-            <label htmlFor="transcation_name">Transcation Name </label>
+            <label htmlFor="transaction_name">Transaction Name </label>
             <Input
-              id="transcation_name"
-              name="transcation_name"
+              id="transaction_name"
+              name="transaction_name"
               className={cn(
                 "rounded-[4px]  hover:border hover:bg-accent  focus:bg-accent",
                 removeOutline
@@ -332,7 +445,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                   transactionName: e.target.value,
                 }));
               }}
-              placeholder="Search by Transcation Name "
+              placeholder="Search by Transaction Name "
             ></Input>
           </div>
         </div>
@@ -359,22 +472,22 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filterData.map((transcation) => (
+              {filterData.map((transaction) => (
                 <TableRow
-                  key={transcation.name}
+                  key={transaction.name}
                   className="h-[60px] text-gray-800"
                 >
                   <TableCell className={cn("text-start ")}>
-                    {transcation.name}
+                    {transaction.name}
                   </TableCell>
                   <TableCell className={cn("text-start ")}>
-                    {transcation.category}
+                    {transaction.category}
                   </TableCell>
                   <TableCell className={cn("text-center ")}>
-                    <span>{transcation.amount}</span>
+                    <span>{transaction.amount}</span>
                   </TableCell>
                   <TableCell className={cn("text-center")}>
-                    {transcation.date}
+                    {transaction.date}
                   </TableCell>
                   <TableCell className={cn("text-center")}>
                     <span className="flex w-full justify-center gap-3">
@@ -382,12 +495,12 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                         onClick={() => {
                           setOpenView((prev) => ({
                             state: !prev.state,
-                            transaction_id: transcation.id,
+                            transaction_id: transaction.id,
                           }));
                         }}
                         className="h-4 w-4 text-gray-600 cursor-pointer"
                       />
-                      {transcation.actions == "edit" ? (
+                      {transaction.actions == "edit" ? (
                         <SquarePen className="h-4 w-4 text-gray-600 cursor-pointer" />
                       ) : (
                         <>
@@ -606,7 +719,7 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
                     setTransactions((prev) => [...prev, addTransactions]);
                     window.localStorage.setItem(
                       "transaction",
-                      JSON.stringify([...transcations, addTransactions])
+                      JSON.stringify([...transactions, addTransactions])
                     );
                   }}
                 >
@@ -621,4 +734,4 @@ const Transcation = ({ dataLimit }: { dataLimit: number }) => {
   );
 };
 
-export default Transcation;
+export default Transaction;
