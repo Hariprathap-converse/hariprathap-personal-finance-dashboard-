@@ -639,7 +639,7 @@ const Transaction = ({ dataLimit }: { dataLimit: number }) => {
                       removeOutline
                     )}
                   >
-                    <SelectValue placeholder="Action" />
+                    <SelectValue placeholder="Select a Category" />
                   </SelectTrigger>
                   <SelectContent className="rounded-sm overflow-auto">
                     {categories?.map((category: any) => (

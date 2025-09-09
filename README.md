@@ -20,6 +20,10 @@ Implemented
 
 10. Transaction Management
 
+11. Date Range Picker
+
+12. Clear All Fillter
+
 Not Implemented
 
 1. Api intergration
